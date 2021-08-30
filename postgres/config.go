@@ -1,15 +1,17 @@
 package postgres
 
 type Config interface {
-	// Db returns the name of the configured database.
+	// Db returns the database value.
 	Db() string
-	// Host returns the hostname of the configured database.
+	// Host returns hostname value.
 	Host() string
-	// Port returns the port address of the configured database.
+	// Password returns the password value.
+	Password() string
+	// Port returns the port value.
 	Port() string
-	// SSLMode returns the SSL connection setting for the configured database.
+	// SSLMode returns SSL value.
 	SSLMode() string
-	// User returns the configured database user.
+	// User returns user value.
 	User() string
 }
 
@@ -23,16 +25,17 @@ type config struct {
 	user string
 }
 
-func (v config) Db() string      { return v.db }      // Db returns config.db
-func (v config) Host() string    { return v.host }    // Host returns config.host
-func (v config) Port() string    { return v.port }    // Port returns config.port
-func (v config) SSLMode() string { return v.sslmode } // SSLMode returns config.sslmode
-func (v config) User() string    { return v.user }    // User returns config.user
+func (v config) Db() string       { return v.db }       // Db returns config.db
+func (v config) Host() string     { return v.host }     // Host returns config.host
+func (v config) Password() string { return v.password } // Password returns config.password
+func (v config) Port() string     { return v.port }     // Port returns config.port
+func (v config) SSLMode() string  { return v.sslmode }  // SSLMode returns config.sslmode
+func (v config) User() string     { return v.user }     // User returns config.user
 
 // NewConfig returns a new Config.
 func NewConfig() Config {
-	c := config{}
-	setConfig(&c)
+	c := &config{}
+	setConfig(c)
 	return c
 }
 

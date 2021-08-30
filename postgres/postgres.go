@@ -62,3 +62,16 @@ func getEnvSSLMode() (string, error) {
 func getEnvUser() (string, error) {
 	return getEnv(envUser)
 }
+
+// newDriverSource returns a new database driver source string.
+func newDriverSource(c Config) string {
+	var (
+		db       = c.Db()
+		host     = c.Host()
+		password = c.Password()
+		port     = c.Port()
+		sslmode  = c.SSLMode()
+		user     = c.User()
+	)
+	return fmt.Sprintf(driverSource, db, host, password, port, sslmode, user)
+}
