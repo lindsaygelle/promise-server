@@ -1,12 +1,17 @@
 package content
 
-import "time"
+import (
+	"time"
+
+	"golang.org/x/text/language"
+)
 
 type User struct {
 	Content
 
-	Created time.Time
-	Email   string
-	ID      ID
-	Name    string
+	Created  time.Time
+	Email    string
+	ID       ID
+	Language language.Tag
+	Name     string
 }
