@@ -1,62 +1,23 @@
 package main
 
 import (
-	"database/sql"
+	_ "github.com/lib/pq"
+
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 
-	"github.com/go-redis/redis"
-	_ "github.com/lib/pq"
+	"github.com/lindsaygelle/promise/promise-server/postgres"
+	"github.com/lindsaygelle/promise/promise-server/redis"
 )
 
-func getRedis(redisOptions *redis.Options) *redis.Client {
-	redisClient := redis.NewClient(redisOptions)
-	_, err := redisClient.Ping().Result()
-	if err != nil {
-		log.Fatal(err)
-	}
-	return redisClient
-}
-
-func getRedisOptions() *redis.Options {
-	var (
-		host     = os.Getenv("REDIS_HOST")
-		password = os.Getenv("REDIS_PASSWORD")
-		port     = os.Getenv("REDIS_PORT")
-	)
-	return &redis.Options{
-		Addr:     (host + ":" + port),
-		Password: password,
-		DB:       0}
-}
-
-func getPostgres() *sql.DB {
-	var (
-		database = os.Getenv("POSTGRES_DB")
-		host     = os.Getenv("POSTGRES_HOST")
-		password = os.Getenv("POSTGRES_PASSWORD")
-		port     = os.Getenv("POSTGRES_PORT")
-		sslmode  = os.Getenv("POSTGRES_SSL")
-		user     = os.Getenv("POSTGRES_USER")
-	)
-	dataSourceName := fmt.Sprintf("dbname=%s host=%s password=%s port=%s sslmode=%s user=%s", database, host, password, port, sslmode, user)
-	driverName := "postgres"
-	db, err := sql.Open(driverName, dataSourceName)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return db
-}
-
 func main() {
-	redisClientOptions := getRedisOptions()
-	redisClient := getRedis(redisClientOptions)
-	postgresClient := getPostgres()
+	redis := redis.NewClient(redis.NewConfig())
+	postgres := postgres.NewClient(postgres.NewConfig())
 	http.HandleFunc("/postgres", func(w http.ResponseWriter, r *http.Request) {
-		err := postgresClient.Ping()
+		err := postgres.Ping()
 		statusCode := http.StatusOK
 		if err != nil {
 			statusCode = http.StatusInternalServerError
@@ -69,7 +30,7 @@ func main() {
 		})
 	})
 	http.HandleFunc("/redis", func(w http.ResponseWriter, r *http.Request) {
-		s, err := redisClient.Ping().Result()
+		s, err := redis.Ping().Result()
 		statusCode := http.StatusOK
 		if err != nil {
 			statusCode = http.StatusInternalServerError
