@@ -16,9 +16,9 @@ type client struct {
 
 // NewClient returns a new Client.
 func NewClient(c Config) Client {
-	db, err := sql.Open(driver, newDriverSource(c))
+	v, err := sql.Open(driver, newDriverSource(c))
 	if err != nil {
 		panic(err)
 	}
-	return &client{db}
+	return &client{v}
 }

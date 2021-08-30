@@ -25,12 +25,12 @@ type config struct {
 	user string
 }
 
-func (v config) Db() string       { return v.db }       // Db returns config.db
-func (v config) Host() string     { return v.host }     // Host returns config.host
-func (v config) Password() string { return v.password } // Password returns config.password
-func (v config) Port() string     { return v.port }     // Port returns config.port
-func (v config) SSLMode() string  { return v.sslmode }  // SSLMode returns config.sslmode
-func (v config) User() string     { return v.user }     // User returns config.user
+func (v config) Db() string       { return v.db }
+func (v config) Host() string     { return v.host }
+func (v config) Password() string { return v.password }
+func (v config) Port() string     { return v.port }
+func (v config) SSLMode() string  { return v.sslmode }
+func (v config) User() string     { return v.user }
 
 // NewConfig returns a new Config.
 func NewConfig() Config {
