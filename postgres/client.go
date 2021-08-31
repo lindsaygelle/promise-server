@@ -17,6 +17,10 @@ func (c *client) Query(query string, arguments ...interface{}) (database.Rows, e
 	return &rows{v}, err
 }
 
+func (c *client) QueryRow(query string, arguments ...interface{}) database.Row {
+	return &row{c.DB.QueryRow(query, arguments...)}
+}
+
 // NewClient returns a new Client.
 func NewClient(c Config) database.Client {
 	v, err := sql.Open(driver, newDriverSource(c))
