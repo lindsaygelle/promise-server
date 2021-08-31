@@ -12,6 +12,7 @@ import (
 	"github.com/lindsaygelle/promise/promise-server/postgres"
 	"github.com/lindsaygelle/promise/promise-server/redis"
 	"github.com/lindsaygelle/promise/promise-server/server"
+	"github.com/lindsaygelle/w3g"
 )
 
 func main() {
@@ -24,6 +25,7 @@ func main() {
 		if err != nil {
 			statusCode = http.StatusInternalServerError
 		}
+		w.Header().Set(w3g.ContentType, "application/json")
 		w.WriteHeader(statusCode)
 		json.NewEncoder(w).Encode(struct {
 			StatusCode int
@@ -37,6 +39,7 @@ func main() {
 		if err != nil {
 			statusCode = http.StatusInternalServerError
 		}
+		w.Header().Set(w3g.ContentType, "application/json")
 		w.WriteHeader(statusCode)
 		json.NewEncoder(w).Encode(struct {
 			Content    string
@@ -52,8 +55,43 @@ func main() {
 		if err != nil {
 			statusCode = http.StatusInternalServerError
 		}
+		log.Println(r.URL.Path, err)
+		w.Header().Set(w3g.ContentType, "application/json")
 		w.WriteHeader(statusCode)
 		json.NewEncoder(w).Encode(accounts)
+	})
+	http.HandleFunc("/account/settings", func(w http.ResponseWriter, r *http.Request) {
+		settings, err := server.AccountSettings(postgres)
+		statusCode := http.StatusOK
+		if err != nil {
+			statusCode = http.StatusInternalServerError
+		}
+		log.Println(r.URL.Path, err)
+		w.Header().Set(w3g.ContentType, "application/json")
+		w.WriteHeader(statusCode)
+		json.NewEncoder(w).Encode(settings)
+	})
+	http.HandleFunc("/language/languages", func(w http.ResponseWriter, r *http.Request) {
+		languages, err := server.Languages(postgres)
+		statusCode := http.StatusOK
+		if err != nil {
+			statusCode = http.StatusInternalServerError
+		}
+		log.Println(r.URL.Path, err)
+		w.Header().Set(w3g.ContentType, "application/json")
+		w.WriteHeader(statusCode)
+		json.NewEncoder(w).Encode(languages)
+	})
+	http.HandleFunc("/language/tags", func(w http.ResponseWriter, r *http.Request) {
+		tags, err := server.LanguageTags(postgres)
+		statusCode := http.StatusOK
+		if err != nil {
+			statusCode = http.StatusInternalServerError
+		}
+		log.Println(r.URL.Path, err)
+		w.Header().Set(w3g.ContentType, "application/json")
+		w.WriteHeader(statusCode)
+		json.NewEncoder(w).Encode(tags)
 	})
 	http.HandleFunc("/location/countries", func(w http.ResponseWriter, r *http.Request) {
 		countries, err := server.Countries(postgres)
@@ -61,6 +99,8 @@ func main() {
 		if err != nil {
 			statusCode = http.StatusInternalServerError
 		}
+		log.Println(r.URL.Path, err)
+		w.Header().Set(w3g.ContentType, "application/json")
 		w.WriteHeader(statusCode)
 		json.NewEncoder(w).Encode(countries)
 	})
