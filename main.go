@@ -113,6 +113,44 @@ func main() {
 		}
 		c.JSON(statusCode, nil)
 	})
+	r.GET("/promise", func(c *gin.Context) {
+		promises, err := server.GetPromises(postgres)
+		statusCode := http.StatusOK
+		log.Println(c.Request.URL.Path, err)
+		if err != nil {
+			statusCode = http.StatusInsufficientStorage
+		}
+		c.JSON(statusCode, promises)
+	})
+	r.GET("/promise/:id", func(c *gin.Context) {
+		id := c.Param("id")
+		promise, err := server.GetPromise(postgres, id)
+		statusCode := http.StatusOK
+		log.Println(c.Request.URL.Path, err)
+		if err != nil {
+			statusCode = http.StatusNotFound
+		}
+		c.JSON(statusCode, promise)
+	})
+	r.GET("/promise/tag", func(c *gin.Context) {
+		tags, err := server.GetPromiseTags(postgres)
+		statusCode := http.StatusOK
+		log.Println(c.Request.URL.Path, err)
+		if err != nil {
+			statusCode = http.StatusInternalServerError
+		}
+		c.JSON(statusCode, tags)
+	})
+	r.GET("/promise/tag/:id", func(c *gin.Context) {
+		id := c.Param("id")
+		tag, err := server.GetPromiseTag(postgres, id)
+		statusCode := http.StatusOK
+		log.Println(c.Request.URL.Path, err)
+		if err != nil {
+			statusCode = http.StatusNotFound
+		}
+		c.JSON(statusCode, tag)
+	})
 	r.GET("/redis", func(c *gin.Context) {
 		_, err := redis.Ping().Result()
 		statusCode := http.StatusOK
