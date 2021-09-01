@@ -14,6 +14,15 @@ type Tag struct {
 	Tag      string    `json:"tag"`
 }
 
+// GetTag returns a language.Tag.
+func GetTag(client database.Client, id string) (Tag, error) {
+	row, err := client.QueryRow(`SELECT created, id, language, name, tag FROM language.tag WHERE id=$1`, id)
+	if err != nil {
+		return Tag{}, err
+	}
+	return NewTag(row)
+}
+
 // GetTags returns a slice of language.Tag.
 func GetTags(v database.Client) ([]Tag, error) {
 	var tags []Tag
@@ -34,8 +43,8 @@ func GetTags(v database.Client) ([]Tag, error) {
 // NewTag returns a new language.Tag.
 //
 // NewTag returns an error on the condition it cannot correctly scan the database row.
-func NewTag(rows database.Rows) (tag Tag, err error) {
-	err = rows.Scan(&tag.Created, &tag.ID, &tag.Language, &tag.Name, &tag.Tag)
+func NewTag(v interface{ Scan(...interface{}) error }) (tag Tag, err error) {
+	err = v.Scan(&tag.Created, &tag.ID, &tag.Language, &tag.Name, &tag.Tag)
 	return tag, err
 }
 

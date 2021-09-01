@@ -5,6 +5,7 @@ import (
 )
 
 type Client interface {
+	Close() error
 	Ping() *redis.StatusCmd
 }
 

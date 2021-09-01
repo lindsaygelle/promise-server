@@ -10,6 +10,15 @@ type Country struct {
 	Numeric uint8  `json:"numeric"`
 }
 
+// GetCountry returns a location.Country.
+func GetCountry(client database.Client, id string) (Country, error) {
+	row, err := client.QueryRow(`SELECT alpha_2, alpha_3, id, name, numeric FROM location.country WHERE id=$1`, id)
+	if err != nil {
+		return Country{}, err
+	}
+	return NewCountry(row)
+}
+
 // GetCountries returns a slice of location.Country.
 func GetCountries(client database.Client) ([]Country, error) {
 	var countries []Country
@@ -30,8 +39,8 @@ func GetCountries(client database.Client) ([]Country, error) {
 // NewCountry returns a new country.Country.
 //
 // NewCountry returns an error on the condition it cannot correctly scan the database row.
-func NewCountry(rows database.Rows) (country Country, err error) {
-	err = rows.Scan(&country.Alpha2, &country.Alpha3, &country.ID, &country.Name, &country.Numeric)
+func NewCountry(v interface{ Scan(...interface{}) error }) (country Country, err error) {
+	err = v.Scan(&country.Alpha2, &country.Alpha3, &country.ID, &country.Name, &country.Numeric)
 	return country, err
 }
 

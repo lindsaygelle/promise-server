@@ -1,116 +1,88 @@
 package main
 
 import (
-	_ "github.com/lib/pq"
-
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 
+	"github.com/gin-gonic/gin"
+	"github.com/lindsaygelle/promise/promise-server/account"
+	"github.com/lindsaygelle/promise/promise-server/location"
 	"github.com/lindsaygelle/promise/promise-server/postgres"
 	"github.com/lindsaygelle/promise/promise-server/redis"
 	"github.com/lindsaygelle/promise/promise-server/server"
-	"github.com/lindsaygelle/w3g"
 )
 
 func main() {
-	redis := redis.NewClient(redis.NewConfig())
-	postgres := postgres.NewClient(postgres.NewConfig())
-	defer postgres.Close()
-	http.HandleFunc("/postgres", func(w http.ResponseWriter, r *http.Request) {
-		err := postgres.Ping()
-		statusCode := http.StatusOK
-		if err != nil {
-			statusCode = http.StatusInternalServerError
-		}
-		w.Header().Set(w3g.ContentType, "application/json")
-		w.WriteHeader(statusCode)
-		json.NewEncoder(w).Encode(struct {
-			StatusCode int
-		}{
-			StatusCode: statusCode,
-		})
-	})
-	http.HandleFunc("/redis", func(w http.ResponseWriter, r *http.Request) {
-		s, err := redis.Ping().Result()
-		statusCode := http.StatusOK
-		if err != nil {
-			statusCode = http.StatusInternalServerError
-		}
-		w.Header().Set(w3g.ContentType, "application/json")
-		w.WriteHeader(statusCode)
-		json.NewEncoder(w).Encode(struct {
-			Content    string
-			StatusCode int
-		}{
-			Content:    s,
-			StatusCode: statusCode,
-		})
-	})
-	http.HandleFunc("/account/accounts", func(w http.ResponseWriter, r *http.Request) {
+	var (
+		postgres = postgres.NewClient(postgres.NewConfig())
+		redis    = redis.NewClient(redis.NewConfig())
+	)
+	r := gin.Default()
+	r.GET("/account", func(c *gin.Context) {
 		accounts, err := server.Accounts(postgres)
 		statusCode := http.StatusOK
 		if err != nil {
 			statusCode = http.StatusInternalServerError
 		}
-		log.Println(r.URL.Path, err)
-		w.Header().Set(w3g.ContentType, "application/json")
-		w.WriteHeader(statusCode)
-		json.NewEncoder(w).Encode(accounts)
+		c.JSON(statusCode, accounts)
 	})
-	http.HandleFunc("/account/settings", func(w http.ResponseWriter, r *http.Request) {
-		settings, err := server.AccountSettings(postgres)
+	r.GET("/account/:id", func(c *gin.Context) {
+		id := c.Param("id")
+		account, err := account.GetAccount(postgres, id)
+		log.Println(c.Request.URL.Path, id, err)
+		statusCode := http.StatusOK
+		if err != nil {
+			statusCode = http.StatusNotFound
+		}
+		c.JSON(statusCode, account)
+	})
+	r.GET("/account/:id/setting", func(c *gin.Context) {
+		id := c.Param("id")
+		setting, err := account.GetSetting(postgres, id)
+		log.Println(c.Request.URL.Path, id, err)
+		statusCode := http.StatusOK
+		if err != nil {
+			statusCode = http.StatusNotFound
+		}
+		c.JSON(statusCode, setting)
+	})
+	r.GET("/location/country", func(c *gin.Context) {
+		countries, err := location.GetCountries(postgres)
 		statusCode := http.StatusOK
 		if err != nil {
 			statusCode = http.StatusInternalServerError
 		}
-		log.Println(r.URL.Path, err)
-		w.Header().Set(w3g.ContentType, "application/json")
-		w.WriteHeader(statusCode)
-		json.NewEncoder(w).Encode(settings)
+		c.JSON(statusCode, countries)
 	})
-	http.HandleFunc("/language/languages", func(w http.ResponseWriter, r *http.Request) {
-		languages, err := server.Languages(postgres)
+	r.GET("/location/country/:id", func(c *gin.Context) {
+		id := c.Param("id")
+		country, err := location.GetCountry(postgres, id)
+		statusCode := http.StatusOK
+		log.Println(c.Request.URL.Path, id, err)
+		if err != nil {
+			statusCode = http.StatusNotFound
+		}
+		c.JSON(statusCode, country)
+	})
+	r.GET("/postgres", func(c *gin.Context) {
+		err := postgres.Ping()
 		statusCode := http.StatusOK
 		if err != nil {
 			statusCode = http.StatusInternalServerError
 		}
-		log.Println(r.URL.Path, err)
-		w.Header().Set(w3g.ContentType, "application/json")
-		w.WriteHeader(statusCode)
-		json.NewEncoder(w).Encode(languages)
+		c.JSON(statusCode, nil)
 	})
-	http.HandleFunc("/language/tags", func(w http.ResponseWriter, r *http.Request) {
-		tags, err := server.LanguageTags(postgres)
+	r.GET("/redis", func(c *gin.Context) {
+		_, err := redis.Ping().Result()
 		statusCode := http.StatusOK
 		if err != nil {
 			statusCode = http.StatusInternalServerError
 		}
-		log.Println(r.URL.Path, err)
-		w.Header().Set(w3g.ContentType, "application/json")
-		w.WriteHeader(statusCode)
-		json.NewEncoder(w).Encode(tags)
+		c.JSON(statusCode, nil)
 	})
-	http.HandleFunc("/location/countries", func(w http.ResponseWriter, r *http.Request) {
-		countries, err := server.Countries(postgres)
-		statusCode := http.StatusOK
-		if err != nil {
-			statusCode = http.StatusInternalServerError
-		}
-		log.Println(r.URL.Path, err)
-		w.Header().Set(w3g.ContentType, "application/json")
-		w.WriteHeader(statusCode)
-		json.NewEncoder(w).Encode(countries)
-	})
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(struct {
-			StatusCode int
-		}{
-			StatusCode: http.StatusOK,
-		})
-	})
-	log.Println(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("ADDR")), nil))
+	defer postgres.Close()
+	defer redis.Close()
+	r.Run(fmt.Sprintf(":%s", os.Getenv("ADDR")))
 }

@@ -12,6 +12,15 @@ type Account struct {
 	Name    string    `json:"name"`
 }
 
+// GetAccount returns a account.Account.
+func GetAccount(client database.Client, id string) (Account, error) {
+	row, err := client.QueryRow(`SELECT created, id, name FROM account.account WHERE id=$1`, id)
+	if err != nil {
+		return Account{}, err
+	}
+	return NewAccount(row)
+}
+
 // GetAccounts returns a slice of account.Account.
 func GetAccounts(client database.Client) ([]Account, error) {
 	var accounts []Account
@@ -32,8 +41,8 @@ func GetAccounts(client database.Client) ([]Account, error) {
 // NewAccount returns a new account.Account.
 //
 // NewAccount returns an error on the condition it cannot correctly scan the database row.
-func NewAccount(rows database.Rows) (account Account, err error) {
-	err = rows.Scan(&account.Created, &account.ID, &account.Name)
+func NewAccount(v interface{ Scan(...interface{}) error }) (account Account, err error) {
+	err = v.Scan(&account.Created, &account.ID, &account.Name)
 	return account, err
 }
 

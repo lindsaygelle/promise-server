@@ -14,6 +14,15 @@ type Setting struct {
 	Language  uint      `json:"language"`
 }
 
+// GetSetting returns a account.Setting.
+func GetSetting(client database.Client, id string) (Setting, error) {
+	row, err := client.QueryRow(`SELECT account, biography, country, edited, language FROM account.setting WHERE account=$1`, id)
+	if err != nil {
+		return Setting{}, err
+	}
+	return NewSetting(row)
+}
+
 // GetSettings returns a slice of account.Setting.
 func GetSettings(client database.Client) ([]Setting, error) {
 	var settings []Setting
@@ -34,8 +43,8 @@ func GetSettings(client database.Client) ([]Setting, error) {
 // NewSetting returns a new account.Setting.
 //
 // NewSetting returns an error on the condition it cannot correctly scan the database row.
-func NewSetting(rows database.Rows) (setting Setting, err error) {
-	err = rows.Scan(&setting.Account, &setting.Biography, &setting.Country, &setting.Edited, &setting.Language)
+func NewSetting(v interface{ Scan(...interface{}) error }) (setting Setting, err error) {
+	err = v.Scan(&setting.Account, &setting.Biography, &setting.Country, &setting.Edited, &setting.Language)
 	return setting, err
 }
 
