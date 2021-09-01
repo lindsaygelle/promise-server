@@ -5,22 +5,22 @@ import (
 	"github.com/lindsaygelle/promise/promise-server/language"
 )
 
-// LanguageTag returns a language.Tag.
-func LanguageTag(client database.Client, id string) (language.Tag, error) {
+// GetLanguageTag returns a language.Tag.
+func GetLanguageTag(client database.Client, id string) (language.Tag, error) {
 	return language.GetTag(client, id)
 }
 
-// LanguageTags returns a slice of language.Tag.
-func LanguageTags(client database.Client) ([]language.Tag, error) {
+// GetLanguageTags returns a slice of language.Tag.
+func GetLanguageTags(client database.Client) ([]language.Tag, error) {
 	return language.GetTags(client)
 }
 
-// Language returns a language.Tag
-func Language(client database.Client, id string) (language.Tag, error) {
-	return language.GetTag(client, id)
+// GetLanguage returns a language.Language.
+func GetLanguage(client database.Client, id string) (language.Language, error) {
+	return language.GetLanguage(client, id)
 }
 
-// Languages returns a slice of language.Language.
-func Languages(client database.Client) ([]language.Language, error) {
+// GetLanguages returns a slice of language.Language.
+func GetLanguages(client database.Client) ([]language.Language, error) {
 	return language.GetLanguages(client)
 }

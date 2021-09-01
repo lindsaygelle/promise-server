@@ -7,8 +7,6 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/lindsaygelle/promise/promise-server/account"
-	"github.com/lindsaygelle/promise/promise-server/location"
 	"github.com/lindsaygelle/promise/promise-server/postgres"
 	"github.com/lindsaygelle/promise/promise-server/redis"
 	"github.com/lindsaygelle/promise/promise-server/server"
@@ -21,8 +19,9 @@ func main() {
 	)
 	r := gin.Default()
 	r.GET("/account", func(c *gin.Context) {
-		accounts, err := server.Accounts(postgres)
+		accounts, err := server.GetAccounts(postgres)
 		statusCode := http.StatusOK
+		log.Println(c.Request.URL.Path, err)
 		if err != nil {
 			statusCode = http.StatusInternalServerError
 		}
@@ -30,9 +29,9 @@ func main() {
 	})
 	r.GET("/account/:id", func(c *gin.Context) {
 		id := c.Param("id")
-		account, err := account.GetAccount(postgres, id)
-		log.Println(c.Request.URL.Path, id, err)
+		account, err := server.GetAccount(postgres, id)
 		statusCode := http.StatusOK
+		log.Println(c.Request.URL.Path, id, err)
 		if err != nil {
 			statusCode = http.StatusNotFound
 		}
@@ -40,17 +39,56 @@ func main() {
 	})
 	r.GET("/account/:id/setting", func(c *gin.Context) {
 		id := c.Param("id")
-		setting, err := account.GetSetting(postgres, id)
-		log.Println(c.Request.URL.Path, id, err)
+		setting, err := server.GetAccountSetting(postgres, id)
 		statusCode := http.StatusOK
+		log.Println(c.Request.URL.Path, id, err)
 		if err != nil {
 			statusCode = http.StatusNotFound
 		}
 		c.JSON(statusCode, setting)
 	})
-	r.GET("/location/country", func(c *gin.Context) {
-		countries, err := location.GetCountries(postgres)
+	r.GET("/account/setting", func(c *gin.Context) {
+		settings, err := server.GetAccountSettings(postgres)
 		statusCode := http.StatusOK
+		log.Println(c.Request.URL.Path, err)
+		if err != nil {
+			statusCode = http.StatusInternalServerError
+		}
+		c.JSON(statusCode, settings)
+	})
+	r.GET("/language", func(c *gin.Context) {
+		languages, err := server.GetLanguages(postgres)
+		statusCode := http.StatusOK
+		log.Println(c.Request.URL.Path, err)
+		if err != nil {
+			statusCode = http.StatusInternalServerError
+		}
+		c.JSON(statusCode, languages)
+	})
+	r.GET("/language/:id", func(c *gin.Context) {
+		id := c.Param("id")
+		language, err := server.GetLanguage(postgres, id)
+		statusCode := http.StatusOK
+		log.Println(c.Request.URL.Path, id, err)
+		if err != nil {
+			statusCode = http.StatusNotFound
+		}
+		c.JSON(statusCode, language)
+	})
+	r.GET("/language/:id/tag", func(c *gin.Context) {
+		id := c.Param("id")
+		tag, err := server.GetLanguageTag(postgres, id)
+		statusCode := http.StatusOK
+		log.Println(c.Request.URL.Path, id, err)
+		if err != nil {
+			statusCode = http.StatusNotFound
+		}
+		c.JSON(statusCode, tag)
+	})
+	r.GET("/location/country", func(c *gin.Context) {
+		countries, err := server.GetCountries(postgres)
+		statusCode := http.StatusOK
+		log.Println(c.Request.URL.Path, err)
 		if err != nil {
 			statusCode = http.StatusInternalServerError
 		}
@@ -58,7 +96,7 @@ func main() {
 	})
 	r.GET("/location/country/:id", func(c *gin.Context) {
 		id := c.Param("id")
-		country, err := location.GetCountry(postgres, id)
+		country, err := server.GetCountry(postgres, id)
 		statusCode := http.StatusOK
 		log.Println(c.Request.URL.Path, id, err)
 		if err != nil {
@@ -69,6 +107,7 @@ func main() {
 	r.GET("/postgres", func(c *gin.Context) {
 		err := postgres.Ping()
 		statusCode := http.StatusOK
+		log.Println(c.Request.URL.Path, err)
 		if err != nil {
 			statusCode = http.StatusInternalServerError
 		}
@@ -77,6 +116,7 @@ func main() {
 	r.GET("/redis", func(c *gin.Context) {
 		_, err := redis.Ping().Result()
 		statusCode := http.StatusOK
+		log.Println(c.Request.URL.Path, err)
 		if err != nil {
 			statusCode = http.StatusInternalServerError
 		}

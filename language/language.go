@@ -12,6 +12,15 @@ type Language struct {
 	Name    string    `json:"name"`
 }
 
+// GetLanguage returns a language.Language.
+func GetLanguage(client database.Client, id string) (Language, error) {
+	row, err := client.QueryRow(`SELECT created, id, name FROM language.language WHERE id=$1`, id)
+	if err != nil {
+		return Language{}, err
+	}
+	return NewLanguage(row)
+}
+
 // GetLanguages returns a slice of language.Language.
 func GetLanguages(client database.Client) ([]Language, error) {
 	var languages []Language
