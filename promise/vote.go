@@ -9,14 +9,13 @@ import (
 type Vote struct {
 	Account uint      `json:"account"`
 	Created time.Time `json:"created"`
-	ID      uint      `json:"id"`
 	Promise uint      `json:"promise"`
 	Value   bool      `json:"value"`
 }
 
 // GetVote returns a promise.Vote.
 func GetVote(client database.Client, id string) (Vote, error) {
-	row, err := client.QueryRow(`SELECT account, created, id, promise, value promise.vote WHERE id=$1`, id)
+	row, err := client.QueryRow(`SELECT account, created, promise, value promise.vote WHERE id=$1`, id)
 	if err != nil {
 		return Vote{}, err
 	}
@@ -26,7 +25,7 @@ func GetVote(client database.Client, id string) (Vote, error) {
 // GetVotes returns a slice of promise.Vote.
 func GetVotes(v database.Client) ([]Vote, error) {
 	var votes []Vote
-	rows, err := v.Query(`SELECT account, created, id, promise, value FROM promise.vote`)
+	rows, err := v.Query(`SELECT account, created, promise, value FROM promise.vote`)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +43,7 @@ func GetVotes(v database.Client) ([]Vote, error) {
 //
 // NewVote returns an error on the condition it cannot correctly scan the database row.
 func NewVote(v database.Scanner) (vote Vote, err error) {
-	err = v.Scan(&vote.Account, &vote.Created, &vote.ID, &vote.Promise, &vote.Promise)
+	err = v.Scan(&vote.Account, &vote.Created, &vote.Promise, &vote.Value)
 	return vote, err
 }
 
