@@ -151,6 +151,15 @@ func main() {
 		}
 		c.JSON(statusCode, tag)
 	})
+	r.GET("/promise/vote", func(c *gin.Context) {
+		votes, err := server.GetPromiseVotes(postgres)
+		statusCode := http.StatusOK
+		log.Println(c.Request.URL.Path, err)
+		if err != nil {
+			statusCode = http.StatusInternalServerError
+		}
+		c.JSON(statusCode, votes)
+	})
 	r.GET("/redis", func(c *gin.Context) {
 		_, err := redis.Ping().Result()
 		statusCode := http.StatusOK

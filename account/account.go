@@ -41,7 +41,7 @@ func GetAccounts(client database.Client) ([]Account, error) {
 // NewAccount returns a new account.Account.
 //
 // NewAccount returns an error on the condition it cannot correctly scan the database row.
-func NewAccount(v interface{ Scan(...interface{}) error }) (account Account, err error) {
+func NewAccount(v database.Scanner) (account Account, err error) {
 	err = v.Scan(&account.Created, &account.ID, &account.Name)
 	return account, err
 }

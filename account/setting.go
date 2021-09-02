@@ -43,7 +43,7 @@ func GetSettings(client database.Client) ([]Setting, error) {
 // NewSetting returns a new account.Setting.
 //
 // NewSetting returns an error on the condition it cannot correctly scan the database row.
-func NewSetting(v interface{ Scan(...interface{}) error }) (setting Setting, err error) {
+func NewSetting(v database.Scanner) (setting Setting, err error) {
 	err = v.Scan(&setting.Account, &setting.Biography, &setting.Country, &setting.Edited, &setting.Language)
 	return setting, err
 }

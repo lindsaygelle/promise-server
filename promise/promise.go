@@ -47,7 +47,7 @@ func GetPromises(v database.Client) ([]Promise, error) {
 // NewPromise returns a new promise.promise.
 //
 // NewPromise returns an error on the condition it cannot correctly scan the database row.
-func NewPromise(v interface{ Scan(...interface{}) error }) (promise Promise, err error) {
+func NewPromise(v database.Scanner) (promise Promise, err error) {
 	err = v.Scan(&promise.Completed, &promise.Created, &promise.Description, &promise.Edited, &promise.ID, &promise.Locked, &promise.Maker, &promise.Name, &promise.Owner)
 	return promise, err
 }

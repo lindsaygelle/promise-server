@@ -23,4 +23,6 @@ func GetPromiseTags(client database.Client) ([]promise.Tag, error) {
 	return promise.GetTags(client)
 }
 
-func GetPromiseVotes(client database.Client) {}
+func GetPromiseVotes(client database.Client) ([]promise.Vote, error) {
+	return promise.GetVotes(client)
+}

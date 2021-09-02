@@ -41,7 +41,7 @@ func GetLanguages(client database.Client) ([]Language, error) {
 // NewLanguage returns a new language.Language.
 //
 // NewLanguage returns an error on the condition it cannot correctly scan the database row.
-func NewLanguage(v interface{ Scan(...interface{}) error }) (language Language, err error) {
+func NewLanguage(v database.Scanner) (language Language, err error) {
 	err = v.Scan(&language.Created, &language.ID, &language.Name)
 	return language, err
 }

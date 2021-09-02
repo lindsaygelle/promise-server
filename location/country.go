@@ -39,7 +39,7 @@ func GetCountries(client database.Client) ([]Country, error) {
 // NewCountry returns a new country.Country.
 //
 // NewCountry returns an error on the condition it cannot correctly scan the database row.
-func NewCountry(v interface{ Scan(...interface{}) error }) (country Country, err error) {
+func NewCountry(v database.Scanner) (country Country, err error) {
 	err = v.Scan(&country.Alpha2, &country.Alpha3, &country.ID, &country.Name, &country.Numeric)
 	return country, err
 }

@@ -42,7 +42,7 @@ func GetTags(v database.Client) ([]Tag, error) {
 // NewTag returns a new promise.Tag.
 //
 // NewTag returns an error on the condition it cannot correctly scan the database row.
-func NewTag(v interface{ Scan(...interface{}) error }) (tag Tag, err error) {
+func NewTag(v database.Scanner) (tag Tag, err error) {
 	err = v.Scan(&tag.Created, &tag.ID, &tag.Maker, &tag.Value)
 	return tag, err
 }
