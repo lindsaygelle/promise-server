@@ -24,18 +24,16 @@ func GetTag(client database.Client, id string) (Tag, error) {
 }
 
 // GetTags returns a slice of language.Tag.
-func GetTags(v database.Client) ([]Tag, error) {
+func GetTags(client database.Client) ([]Tag, error) {
 	var tags []Tag
-	rows, err := v.Query(`SELECT created, id, language, name, tag FROM language.tag`)
+	rows, err := client.Query(`SELECT created, id, language, name, tag FROM language.tag`)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	for rows.Next() {
-		err = addTag(&tags, rows)
-		if err != nil {
-			return nil, err
-		}
+	err = processTags(&tags, rows)
+	if err != nil {
+		return nil, err
 	}
 	return tags, nil
 }
@@ -58,4 +56,14 @@ func addTag(v *[]Tag, rows database.Rows) error {
 	}
 	*v = append(*v, tag)
 	return err
+}
+
+func processTags(tags *[]Tag, rows database.Rows) error {
+	for rows.Next() {
+		err := addTag(tags, rows)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

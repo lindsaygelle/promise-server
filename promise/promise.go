@@ -18,7 +18,7 @@ type Promise struct {
 	Owner       uint              `json:"owner"`
 }
 
-// GetPromise returns a promise.Promise.
+// GetPromise returns a Promise.
 func GetPromise(client database.Client, id string) (Promise, error) {
 	row, err := client.QueryRow(`SELECT * FROM promise.promise WHERE id=$1`, id)
 	if err != nil {
@@ -27,24 +27,35 @@ func GetPromise(client database.Client, id string) (Promise, error) {
 	return NewPromise(row)
 }
 
-// GetPromises returns a slice of promise.Promise.
-func GetPromises(v database.Client) ([]Promise, error) {
-	var Promises []Promise
-	rows, err := v.Query(`SELECT * FROM promise.promise`)
+// GetPromises returns a slice of Promise.
+func GetPromises(client database.Client) ([]Promise, error) {
+	rows, err := client.Query(`SELECT * FROM promise.promise`)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	for rows.Next() {
-		err = addPromise(&Promises, rows)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return Promises, nil
+	return getPromises(rows)
 }
 
-// NewPromise returns a new promise.promise.
+func GetPromisesMaker(client database.Client, id string) ([]Promise, error) {
+	rows, err := client.Query(`SELECT * FROM promise.promise WHERE maker=$1`, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	return getPromises(rows)
+}
+
+func GetPromisesOwner(client database.Client, id string) ([]Promise, error) {
+	rows, err := client.Query(`SELECT * FROM promise.promise WHERE owner=$1`, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	return getPromises(rows)
+}
+
+// NewPromise returns a new Promise.
 //
 // NewPromise returns an error on the condition it cannot correctly scan the database row.
 func NewPromise(v database.Scanner) (promise Promise, err error) {
@@ -62,4 +73,23 @@ func addPromise(v *[]Promise, rows database.Rows) error {
 	}
 	*v = append(*v, Promise)
 	return err
+}
+
+func getPromises(rows database.Rows) ([]Promise, error) {
+	var promises []Promise
+	err := processPromises(&promises, rows)
+	if err != nil {
+		return nil, err
+	}
+	return promises, nil
+}
+
+func processPromises(promises *[]Promise, rows database.Rows) error {
+	for rows.Next() {
+		err := addPromise(promises, rows)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

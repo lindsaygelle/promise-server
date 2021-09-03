@@ -1,26 +1,22 @@
 package server
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/lindsaygelle/promise/promise-server/account"
 	"github.com/lindsaygelle/promise/promise-server/database"
 )
 
-// AccountSetting returns a account.Setting.
-func GetAccountSetting(client database.Client, id string) (account.Setting, error) {
-	return account.GetSetting(client, id)
-}
-
-// AccountSettings returns a slice of account.Setting.
-func GetAccountSettings(client database.Client) ([]account.Setting, error) {
-	return account.GetSettings(client)
-}
-
-// GetAccount returns a account.Account.
-func GetAccount(client database.Client, id string) (account.Account, error) {
-	return account.GetAccount(client, id)
-}
-
-// Accounts returns a slice of account.Account.
-func GetAccounts(client database.Client) ([]account.Account, error) {
-	return account.GetAccounts(client)
+func RouteAccount(client database.Client, engine *gin.Engine) {
+	engine.GET("/account", func(c *gin.Context) {
+		accounts, err := account.GetAccounts(client)
+		c.JSON(statusCode(err), accounts)
+	})
+	engine.GET("/account/:id", func(c *gin.Context) {
+		account, err := account.GetAccount(client, c.Param("id"))
+		c.JSON(statusCode(err), account)
+	})
+	engine.GET("/account/:id/setting", func(c *gin.Context) {
+		setting, err := account.GetSetting(client, c.Param("id"))
+		c.JSON(statusCode(err), setting)
+	})
 }

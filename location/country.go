@@ -27,11 +27,9 @@ func GetCountries(client database.Client) ([]Country, error) {
 		return nil, err
 	}
 	defer rows.Close()
-	for rows.Next() {
-		err = addCountry(&countries, rows)
-		if err != nil {
-			return nil, err
-		}
+	err = processCountries(&countries, rows)
+	if err != nil {
+		return nil, err
 	}
 	return countries, nil
 }
@@ -53,5 +51,15 @@ func addCountry(v *[]Country, rows database.Rows) error {
 		return err
 	}
 	*v = append(*v, country)
+	return nil
+}
+
+func processCountries(countries *[]Country, rows database.Rows) error {
+	for rows.Next() {
+		err := addCountry(countries, rows)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }

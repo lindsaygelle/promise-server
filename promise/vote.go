@@ -13,33 +13,31 @@ type Vote struct {
 	Value   bool      `json:"value"`
 }
 
-// GetVote returns a promise.Vote.
+// GetVote returns a Vote.
 func GetVote(client database.Client, id string) (Vote, error) {
-	row, err := client.QueryRow(`SELECT account, created, promise, value promise.vote WHERE id=$1`, id)
+	row, err := client.QueryRow(`SELECT account, created, promise, value promise.vote WHERE promise=$1`, id)
 	if err != nil {
 		return Vote{}, err
 	}
 	return NewVote(row)
 }
 
-// GetVotes returns a slice of promise.Vote.
-func GetVotes(v database.Client) ([]Vote, error) {
+// GetVotes returns a slice of Vote.
+func GetVotes(client database.Client) ([]Vote, error) {
 	var votes []Vote
-	rows, err := v.Query(`SELECT account, created, promise, value FROM promise.vote`)
+	rows, err := client.Query(`SELECT account, created, promise, value FROM promise.vote`)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	for rows.Next() {
-		err = addVote(&votes, rows)
-		if err != nil {
-			return nil, err
-		}
+	err = processVotes(&votes, rows)
+	if err != nil {
+		return nil, err
 	}
 	return votes, nil
 }
 
-// NewVote returns a new promise.Vote.
+// NewVote returns a new Vote.
 //
 // NewVote returns an error on the condition it cannot correctly scan the database row.
 func NewVote(v database.Scanner) (vote Vote, err error) {
@@ -57,4 +55,14 @@ func addVote(v *[]Vote, rows database.Rows) error {
 	}
 	*v = append(*v, vote)
 	return err
+}
+
+func processVotes(votes *[]Vote, rows database.Rows) error {
+	for rows.Next() {
+		err := addVote(votes, rows)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

@@ -29,11 +29,9 @@ func GetLanguages(client database.Client) ([]Language, error) {
 		return nil, err
 	}
 	defer rows.Close()
-	for rows.Next() {
-		err = addLanguage(&languages, rows)
-		if err != nil {
-			return nil, err
-		}
+	err = processLanguages(&languages, rows)
+	if err != nil {
+		return nil, err
 	}
 	return languages, nil
 }
@@ -56,4 +54,14 @@ func addLanguage(v *[]Language, rows database.Rows) error {
 	}
 	*v = append(*v, langauge)
 	return err
+}
+
+func processLanguages(languages *[]Language, rows database.Rows) error {
+	for rows.Next() {
+		err := addLanguage(languages, rows)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

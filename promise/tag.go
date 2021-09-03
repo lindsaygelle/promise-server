@@ -13,7 +13,7 @@ type Tag struct {
 	Value   string    `json:"value"`
 }
 
-// GetTag returns a promise.Tag.
+// GetTag returns a Tag.
 func GetTag(client database.Client, id string) (Tag, error) {
 	row, err := client.QueryRow(`SELECT created, id, maker, value FROM promise.tag WHERE id=$1`, id)
 	if err != nil {
@@ -22,24 +22,26 @@ func GetTag(client database.Client, id string) (Tag, error) {
 	return NewTag(row)
 }
 
-// GetTags returns a slice of promise.Tag.
-func GetTags(v database.Client) ([]Tag, error) {
-	var tags []Tag
-	rows, err := v.Query(`SELECT created, id, maker, value FROM promise.tag`)
+// GetTags returns a slice of Tag.
+func GetTags(client database.Client) ([]Tag, error) {
+	rows, err := client.Query(`SELECT created, id, maker, value FROM promise.tag`)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	for rows.Next() {
-		err = addTag(&tags, rows)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return tags, nil
+	return geTags(rows)
 }
 
-// NewTag returns a new promise.Tag.
+func GetTagsPromise(client database.Client, id string) ([]Tag, error) {
+	rows, err := client.Query(`SELECT created, id, maker, value FROM promise.tag AS A INNER JOIN promise.promise_tag AS B ON A.id = B.tag WHERE promise=$1`, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	return geTags(rows)
+}
+
+// NewTag returns a new Tag.
 //
 // NewTag returns an error on the condition it cannot correctly scan the database row.
 func NewTag(v database.Scanner) (tag Tag, err error) {
@@ -57,4 +59,23 @@ func addTag(v *[]Tag, rows database.Rows) error {
 	}
 	*v = append(*v, tag)
 	return err
+}
+
+func geTags(rows database.Rows) ([]Tag, error) {
+	var tags []Tag
+	err := processTags(&tags, rows)
+	if err != nil {
+		return nil, err
+	}
+	return tags, nil
+}
+
+func processTags(tags *[]Tag, rows database.Rows) error {
+	for rows.Next() {
+		err := addTag(tags, rows)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
