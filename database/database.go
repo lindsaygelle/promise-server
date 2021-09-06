@@ -1,21 +1,11 @@
 package database
 
-import (
-	"database/sql"
-	"encoding/json"
-)
+import "database/sql"
 
 const (
 	null = `null`
 )
 
-type NullTime struct {
-	sql.NullTime
-}
-
-func (n NullTime) MarshalJSON() ([]byte, error) {
-	if n.Valid {
-		return json.Marshal(n.Time)
-	}
-	return []byte(null), nil
+type Database interface {
+	Begin() *sql.Tx
 }
