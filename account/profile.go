@@ -98,7 +98,8 @@ func ReadProfiles(database *sql.DB) (profiles []Profile, err error) {
 	return
 }
 
-func WriteProfile(database *sql.DB, ID string, reader io.Reader) (profile Profile, err error) {
+// WriteProfile writes a profile to the database.
+func WriteProfile(database *sql.DB, reader io.Reader) (profile Profile, err error) {
 	profileMake, err := newProfileMake(reader)
 	if err != nil {
 		return
@@ -133,11 +134,13 @@ func addProfile(profiles *[]Profile, rows *sql.Rows) (err error) {
 	return err
 }
 
+// newProfileMake returns a new ProfileMake.
 func newProfileMake(reader io.Reader) (profileMake ProfileMake, err error) {
 	err = json.NewDecoder(reader).Decode(&profileMake)
 	return
 }
 
+// processEmailAddress extracts the address and domain from an email address.
 func processEmailAddress(email string) (address string, domain string) {
 	i := strings.LastIndex(email, "@")
 	address, domain = email[:i], email[i+1:]
@@ -170,6 +173,7 @@ func scanProfile(scanner database.Scanner) (profile Profile, err error) {
 	return
 }
 
+// verifyEmail checks whether an email address is valid.
 func verifyEmail(email string) (err error) {
 	_, err = mail.ParseAddress(email)
 	return
