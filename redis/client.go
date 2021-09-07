@@ -4,17 +4,8 @@ import (
 	"github.com/go-redis/redis"
 )
 
-type Client interface {
-	Close() error
-	Ping() *redis.StatusCmd
-}
-
-type client struct {
-	*redis.Client
-}
-
 // NewClient returns a new Client.
-func NewClient(c Config) Client {
+func NewClient(c Config) *redis.Client {
 	var (
 		db       = c.Db()
 		password = c.Password()
@@ -23,5 +14,5 @@ func NewClient(c Config) Client {
 		Addr:     newDriverAddr(c),
 		DB:       db,
 		Password: password})
-	return client{v}
+	return v
 }
