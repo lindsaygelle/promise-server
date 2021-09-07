@@ -1,11 +1,9 @@
 package database
 
-import "database/sql"
-
 const (
-	null = `null`
+	null = "null"
 )
 
-type Database interface {
-	Begin() *sql.Tx
-}
+var (
+	nullValue = []byte(null)
+)
