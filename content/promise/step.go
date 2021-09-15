@@ -1,6 +1,8 @@
 package promise
 
 import (
+	"bytes"
+	"database/sql"
 	"encoding/json"
 	"io"
 	"time"
@@ -28,4 +30,13 @@ func DecodeStep(readCloser io.ReadCloser) (step Step, err error) {
 		return
 	}
 	return
+}
+
+func ScanStep(scanner interface{ Scan(...interface{}) error }) (Step, error) {
+	var b []byte
+	err := scanner.Scan(&b)
+	if err == sql.ErrNoRows {
+		return Step{}, ErrStepNotFound
+	}
+	return DecodeStep(io.NopCloser(bytes.NewReader(b)))
 }

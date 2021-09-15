@@ -11,4 +11,5 @@ const (
 	ErrTaskID
 	ErrTaskCategoryID
 	ErrTaskName
+	ErrTaskNotFound
 )

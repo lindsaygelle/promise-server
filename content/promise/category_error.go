@@ -9,5 +9,6 @@ func (e CategoryError) Error() (s string) {
 const (
 	ErrCategory CategoryError = iota + 1
 	ErrCategoryName
+	ErrCategoryNotFound
 	ErrCategoryProfileID
 )

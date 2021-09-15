@@ -9,6 +9,7 @@ func (e StepError) Error() (s string) {
 const (
 	ErrStep StepError = iota + 1
 	ErrStepName
+	ErrStepNotFound
 	ErrStepTaskID
 	ErrStepTimeDue
 )

@@ -1,6 +1,8 @@
 package promise
 
 import (
+	"bytes"
+	"database/sql"
 	"encoding/json"
 	"io"
 	"time"
@@ -23,4 +25,13 @@ func DecodeCategory(reader io.ReadCloser) (category Category, err error) {
 		return
 	}
 	return
+}
+
+func ScanCategory(scanner interface{ Scan(...interface{}) error }) (Category, error) {
+	var b []byte
+	err := scanner.Scan(&b)
+	if err == sql.ErrNoRows {
+		return Category{}, ErrCategoryNotFound
+	}
+	return DecodeCategory(io.NopCloser(bytes.NewReader(b)))
 }

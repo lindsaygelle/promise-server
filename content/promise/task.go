@@ -1,13 +1,15 @@
 package promise
 
 import (
+	"bytes"
+	"database/sql"
 	"encoding/json"
 	"io"
 	"time"
 )
 
 type Task struct {
-	CategoryID    uint       `json:"category_id"`
+	TaskID        uint       `json:"category_id"`
 	Description   *string    `json:"description"`
 	ID            uint       `json:"id"`
 	IsCompleted   bool       `json:"is_completed"`
@@ -27,4 +29,13 @@ func DecodeTask(readCloser io.ReadCloser) (task Task, err error) {
 		return
 	}
 	return
+}
+
+func ScanTask(scanner interface{ Scan(...interface{}) error }) (Task, error) {
+	var b []byte
+	err := scanner.Scan(&b)
+	if err == sql.ErrNoRows {
+		return Task{}, ErrTaskNotFound
+	}
+	return DecodeTask(io.NopCloser(bytes.NewReader(b)))
 }
