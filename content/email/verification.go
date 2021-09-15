@@ -1,6 +1,8 @@
 package email
 
 import (
+	"bytes"
+	"database/sql"
 	"encoding/json"
 	"io"
 	"time"
@@ -19,4 +21,13 @@ func DecodeVerification(readCloser io.ReadCloser) (verification Verification, er
 	defer readCloser.Close()
 	err = json.NewDecoder(readCloser).Decode(&verification)
 	return
+}
+
+func ScanVerification(scanner interface{ Scan(...interface{}) error }) (Verification, error) {
+	var b []byte
+	err := scanner.Scan(&b)
+	if err == sql.ErrNoRows {
+		return Verification{}, ErrVerificationNotFound
+	}
+	return DecodeVerification(io.NopCloser(bytes.NewReader(b)))
 }

@@ -9,5 +9,6 @@ func (e AddressError) Error() (s string) {
 const (
 	ErrAddress AddressError = iota + 1
 	ErrAddressEmail
+	ErrAddressNotFound
 	ErrAddressProfileID
 )

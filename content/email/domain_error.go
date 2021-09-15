@@ -9,5 +9,6 @@ func (e DomainError) Error() (s string) {
 const (
 	ErrDomain DomainError = iota + 1
 	ErrDomainID
+	ErrDomainNotFound
 	ErrDomainValue
 )

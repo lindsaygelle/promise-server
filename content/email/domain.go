@@ -1,6 +1,8 @@
 package email
 
 import (
+	"bytes"
+	"database/sql"
 	"encoding/json"
 	"io"
 	"time"
@@ -17,4 +19,13 @@ func DecodeDomain(readCloser io.ReadCloser) (domain Domain, err error) {
 	defer readCloser.Close()
 	err = json.NewDecoder(readCloser).Decode(&domain)
 	return
+}
+
+func ScanDomain(scanner interface{ Scan(...interface{}) error }) (Domain, error) {
+	var b []byte
+	err := scanner.Scan(&b)
+	if err == sql.ErrNoRows {
+		return Domain{}, ErrDomainNotFound
+	}
+	return DecodeDomain(io.NopCloser(bytes.NewReader(b)))
 }

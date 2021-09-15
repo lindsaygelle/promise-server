@@ -1,6 +1,8 @@
 package email
 
 import (
+	"bytes"
+	"database/sql"
 	"encoding/json"
 	"io"
 	"time"
@@ -19,4 +21,13 @@ func DecodeAddress(readCloser io.ReadCloser) (address Address, err error) {
 	defer readCloser.Close()
 	err = json.NewDecoder(readCloser).Decode(&address)
 	return
+}
+
+func ScanAddress(scanner interface{ Scan(...interface{}) error }) (Address, error) {
+	var b []byte
+	err := scanner.Scan(&b)
+	if err == sql.ErrNoRows {
+		return Address{}, ErrAddressNotFound
+	}
+	return DecodeAddress(io.NopCloser(bytes.NewReader(b)))
 }
