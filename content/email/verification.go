@@ -9,10 +9,10 @@ import (
 )
 
 type Verification struct {
-	AddressID uint      `json:"address_id"`
-	Code      uuid.UUID `json:"code"`
-	CreatedAt time.Time `json:"created_at"`
-	ExpiresAt time.Time `json:"expires_at"`
+	AddressID   uint      `json:"address_id"`
+	Code        uuid.UUID `json:"code"`
+	TimeCreated time.Time `json:"time_created"`
+	TimeDue     time.Time `json:"time_due"`
 }
 
 func DecodeVerification(readCloser io.ReadCloser) (verification Verification, err error) {

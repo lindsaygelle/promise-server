@@ -7,10 +7,10 @@ import (
 )
 
 type Country struct {
-	CreatedAt time.Time `json:"created_at"`
-	EditedAt  time.Time `json:"edited_at"`
-	ID        uint      `json:"id"`
-	Name      string    `json:"name"`
+	ID          uint      `json:"id"`
+	Name        string    `json:"name"`
+	TimeCreated time.Time `json:"time_created"`
+	TimeEdited  time.Time `json:"time_edited"`
 }
 
 func DecodeCountry(readCloser io.ReadCloser) (country Country, err error) {

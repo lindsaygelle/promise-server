@@ -7,12 +7,12 @@ import (
 )
 
 type Address struct {
-	CityID    uint      `json:"city_id"`
-	CountryID uint      `json:"country_id"`
-	CreatedAt time.Time `json:"created_at"`
-	EditedAt  time.Time `json:"edited_at"`
-	ID        uint      `json:"id"`
-	ProfileID uint      `json:"profile_id"`
+	CityID      uint      `json:"city_id"`
+	CountryID   uint      `json:"country_id"`
+	ID          uint      `json:"id"`
+	ProfileID   uint      `json:"profile_id"`
+	TimeCreated time.Time `json:"time_created"`
+	TimeEdited  time.Time `json:"time_edited"`
 }
 
 func DecodeAddress(readCloser io.ReadCloser) (address Address, err error) {

@@ -7,12 +7,12 @@ import (
 )
 
 type Category struct {
-	CreatedAt   time.Time `json:"created_at"`
 	Description *string   `json:"description"`
-	EditedAt    time.Time `json:"edited_at"`
 	ID          uint      `json:"id"`
 	Name        string    `json:"name"`
 	ProfileID   uint      `json:"profile_id"`
+	TimeCreated time.Time `json:"time_created"`
+	TimeEdited  time.Time `json:"time_edited"`
 }
 
 func DecodeCategory(reader io.ReadCloser) (category Category, err error) {

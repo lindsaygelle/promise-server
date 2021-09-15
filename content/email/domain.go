@@ -7,10 +7,10 @@ import (
 )
 
 type Domain struct {
-	CreatedAt time.Time `json:"created_at"`
-	EditedAt  time.Time `json:"edited_at"`
-	ID        uint      `json:"id"`
-	Value     string    `json:"value"`
+	ID          uint      `json:"id"`
+	Value       string    `json:"value"`
+	TimeCreated time.Time `json:"time_created"`
+	TimeEdited  time.Time `json:"time_edited"`
 }
 
 func DecodeDomain(readCloser io.ReadCloser) (domain Domain, err error) {

@@ -1,12 +1,27 @@
 package promise
 
-import "time"
+import (
+	"encoding/json"
+	"io"
+	"time"
+)
 
 type Step struct {
-	CreatedAt   time.Time `json:"created_at"`
-	Description *string   `json:"description"`
-	EditedAt    time.Time `json:"edited_at"`
-	ID          uint      `json:"id"`
-	Name        string    `json:"name"`
-	TaskID      uint      `json:"task_id"`
+	Description   *string    `json:"description"`
+	ID            uint       `json:"id"`
+	IsCompleted   bool       `json:"is_completed"`
+	IsLocked      bool       `json:"is_locked"`
+	Name          string     `json:"name"`
+	StatusID      uint       `json:"status_id"`
+	TaskID        uint       `json:"task_id"`
+	TimeCompleted *time.Time `json:"time_completed"`
+	TimeCreated   time.Time  `json:"time_created"`
+	TimeDue       time.Time  `json:"time_due"`
+	TimeEdited    time.Time  `json:"time_edited"`
+}
+
+func DecodeStep(readCloser io.ReadCloser) (step Step, err error) {
+	defer readCloser.Close()
+	err = json.NewDecoder(readCloser).Decode(&step)
+	return
 }
