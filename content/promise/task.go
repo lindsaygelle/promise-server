@@ -19,8 +19,6 @@ type Task struct {
 	TimeEdited    time.Time  `json:"time_edited"`
 }
 
-type TaskValidator func(Task) error
-
 func DecodeTask(readCloser io.ReadCloser) (task Task, err error) {
 	defer readCloser.Close()
 	err = json.NewDecoder(readCloser).Decode(&task)

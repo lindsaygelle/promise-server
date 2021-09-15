@@ -20,8 +20,6 @@ type Step struct {
 	TimeEdited    time.Time  `json:"time_edited"`
 }
 
-type StepValidator func(Step) error
-
 func DecodeStep(readCloser io.ReadCloser) (step Step, err error) {
 	defer readCloser.Close()
 	err = json.NewDecoder(readCloser).Decode(&step)

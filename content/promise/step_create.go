@@ -13,39 +13,13 @@ type StepCreate struct {
 	TimeDue     *time.Time `json:"time_due"`
 }
 
-type StepCreateValidator func(StepCreate) error
-
 func DecodeStepCreate(readCloser io.ReadCloser) (stepCreate StepCreate, err error) {
 	defer readCloser.Close()
 	err = json.NewDecoder(readCloser).Decode(&stepCreate)
 	if err != nil {
+		err = ErrStep
 		return
 	}
-	err = verifyStepCreate(stepCreate)
+	err = validateStepCreate(stepCreate)
 	return
-}
-
-func verifyStepCreate(stepCreate StepCreate) error {
-	for _, validator := range [...]StepCreateValidator{
-		verifyStepCreateTaskID,
-		verifyStepCreateTaskTimeDue} {
-		if err := validator(stepCreate); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func verifyStepCreateTaskID(stepCreate StepCreate) error {
-	if stepCreate.TaskID == 0 {
-		return ErrStepTaskID
-	}
-	return nil
-}
-
-func verifyStepCreateTaskTimeDue(stepCreate StepCreate) error {
-	if stepCreate.TimeDue != nil && stepCreate.TimeDue.Before(time.Now()) {
-		return ErrStepTimeDue
-	}
-	return nil
 }
