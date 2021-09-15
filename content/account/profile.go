@@ -1,6 +1,8 @@
 package account
 
 import (
+	"bytes"
+	"database/sql"
 	"encoding/json"
 	"io"
 	"time"
@@ -22,4 +24,14 @@ func DecodeProfile(readCloser io.ReadCloser) (profile Profile, err error) {
 		return
 	}
 	return
+}
+
+func ScanProfile(scanner interface{ Scan(...interface{}) error }) (Profile, error) {
+	var b []byte
+	err := scanner.Scan(&b)
+	if err == sql.ErrNoRows {
+		err = ErrProfileNotFound
+		return Profile{}, err
+	}
+	return DecodeProfile(io.NopCloser(bytes.NewReader(b)))
 }

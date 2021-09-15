@@ -10,4 +10,5 @@ const (
 	ErrProfile ProfileError = iota + 1
 	ErrProfileEmail
 	ErrProfileName
+	ErrProfileNotFound
 )
