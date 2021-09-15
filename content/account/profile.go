@@ -14,8 +14,6 @@ type Profile struct {
 	TimeEdited  time.Time `json:"time_edited"`
 }
 
-type ProfileValidator func(Profile) error
-
 func DecodeProfile(readCloser io.ReadCloser) (profile Profile, err error) {
 	defer readCloser.Close()
 	err = json.NewDecoder(readCloser).Decode(&profile)

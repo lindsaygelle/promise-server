@@ -15,8 +15,6 @@ type Address struct {
 	TimeEdited  time.Time `json:"time_edited"`
 }
 
-type AddressValidator func(Address) error
-
 func DecodeAddress(readCloser io.ReadCloser) (address Address, err error) {
 	defer readCloser.Close()
 	err = json.NewDecoder(readCloser).Decode(&address)
