@@ -8,6 +8,15 @@ var addressCreateValidators = [...]AddressCreateValidator{
 	validateAddressCreateEmail,
 	validateAddressCreateProfileID}
 
+func validateAddressCreate(addressCreate AddressCreate) error {
+	for _, validator := range addressCreateValidators {
+		if err := validator(addressCreate); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func validateAddressCreateEmail(addressCreate AddressCreate) error {
 	if _, err := mail.ParseAddress(addressCreate.Email); err != nil {
 		return ErrAddressEmail

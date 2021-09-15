@@ -13,6 +13,7 @@ type Address struct {
 	DomainID     string     `json:"domain_id"`
 	ID           uint       `json:"id"`
 	IsVerified   bool       `json:"is_verified"`
+	ProfileID    uint       `json:"profile_id"`
 	TimeCreated  time.Time  `json:"time_created"`
 	TimeVerified *time.Time `json:"time_verified"`
 }
@@ -20,6 +21,10 @@ type Address struct {
 func DecodeAddress(readCloser io.ReadCloser) (address Address, err error) {
 	defer readCloser.Close()
 	err = json.NewDecoder(readCloser).Decode(&address)
+	if err != nil {
+		err = ErrAddress
+		return
+	}
 	return
 }
 
