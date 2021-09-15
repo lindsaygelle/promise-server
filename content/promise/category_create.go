@@ -6,9 +6,9 @@ import (
 )
 
 type CategoryCreate struct {
-	Description string `json:"description"`
-	Name        string `json:"name"`
-	ProfileID   string `json:"profile_id"`
+	Description *string `json:"description"`
+	Name        string  `json:"name"`
+	ProfileID   string  `json:"profile_id"`
 }
 
 func DecodeCategoryCreate(reader io.ReadCloser) (categoryCreate CategoryCreate, err error) {

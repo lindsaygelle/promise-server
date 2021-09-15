@@ -12,6 +12,7 @@ type Address struct {
 	CreatedAt time.Time `json:"created_at"`
 	EditedAt  time.Time `json:"edited_at"`
 	ID        uint      `json:"id"`
+	ProfileID uint      `json:"profile_id"`
 }
 
 func DecodeAddress(readCloser io.ReadCloser) (address Address, err error) {
