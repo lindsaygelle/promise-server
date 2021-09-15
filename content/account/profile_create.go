@@ -17,6 +17,6 @@ func DecodeProfileCreate(readCloser io.ReadCloser) (profileCreate ProfileCreate,
 		err = ErrProfile
 		return
 	}
-	err = validateProfileCreate(profileCreate)
+	err = validateProfileCreate(&profileCreate)
 	return
 }

@@ -2,13 +2,13 @@ package account
 
 import "net/mail"
 
-type ProfileCreateValidator func(ProfileCreate) error
+type ProfileCreateValidator func(*ProfileCreate) error
 
 var profileCreateValidators = [...]ProfileCreateValidator{
 	validateProfileCreateEmail,
 	validateProfileCreateName}
 
-func validateProfileCreate(profileCreate ProfileCreate) error {
+func validateProfileCreate(profileCreate *ProfileCreate) error {
 	for _, validator := range profileCreateValidators {
 		if err := validator(profileCreate); err != nil {
 			return err
@@ -17,7 +17,7 @@ func validateProfileCreate(profileCreate ProfileCreate) error {
 	return nil
 }
 
-func validateProfileCreateEmail(profileCreate ProfileCreate) error {
+func validateProfileCreateEmail(profileCreate *ProfileCreate) error {
 	_, err := mail.ParseAddress(profileCreate.Email)
 	if err != nil {
 		return ErrProfileEmail
@@ -25,7 +25,7 @@ func validateProfileCreateEmail(profileCreate ProfileCreate) error {
 	return nil
 }
 
-func validateProfileCreateName(profileCreate ProfileCreate) error {
+func validateProfileCreateName(profileCreate *ProfileCreate) error {
 	if len(profileCreate.Name) == 0 {
 		return ErrProfileName
 	}

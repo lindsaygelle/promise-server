@@ -18,6 +18,6 @@ func DecodeAddressCreate(readCloser io.ReadCloser) (addressCreate AddressCreate,
 		err = ErrAddress
 		return
 	}
-	err = validateAddressCreate(addressCreate)
+	err = validateAddressCreate(&addressCreate)
 	return
 }

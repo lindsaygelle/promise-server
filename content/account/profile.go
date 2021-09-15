@@ -23,15 +23,17 @@ func DecodeProfile(readCloser io.ReadCloser) (profile Profile, err error) {
 		err = ErrProfile
 		return
 	}
+	err = validateProfile(&profile)
 	return
 }
 
-func ScanProfile(scanner interface{ Scan(...interface{}) error }) (Profile, error) {
+func ScanProfile(scanner interface{ Scan(...interface{}) error }) (profile Profile, err error) {
 	var b []byte
-	err := scanner.Scan(&b)
+	err = scanner.Scan(&b)
 	if err == sql.ErrNoRows {
 		err = ErrProfileNotFound
-		return Profile{}, err
+		return
 	}
-	return DecodeProfile(io.NopCloser(bytes.NewReader(b)))
+	profile, err = DecodeProfile(io.NopCloser(bytes.NewReader(b)))
+	return
 }
