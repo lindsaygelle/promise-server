@@ -10,5 +10,6 @@ const (
 	ErrAddress AddressError = iota + 1
 	ErrAddressCityID
 	ErrAddressCountryID
+	ErrAddressNotFound
 	ErrAddressProfileID
 )
