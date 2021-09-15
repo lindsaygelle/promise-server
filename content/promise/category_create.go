@@ -17,6 +17,7 @@ func DecodeCategoryCreate(readCloser io.ReadCloser) (categoryCreate CategoryCrea
 	defer readCloser.Close()
 	err = json.NewDecoder(readCloser).Decode(&categoryCreate)
 	if err != nil {
+		err = ErrCategory
 		return
 	}
 	err = validateCategoryCreate(categoryCreate)

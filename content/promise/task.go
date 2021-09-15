@@ -25,24 +25,8 @@ func DecodeTask(readCloser io.ReadCloser) (task Task, err error) {
 	defer readCloser.Close()
 	err = json.NewDecoder(readCloser).Decode(&task)
 	if err != nil {
+		err = ErrTask
 		return
 	}
-	err = validateTask(task)
 	return
-}
-
-func validateTask(task Task) error {
-	for _, validator := range []TaskValidator{validateTaskID} {
-		if err := validator(task); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func validateTaskID(task Task) error {
-	if task.ID == 0 {
-		return ErrTask
-	}
-	return nil
 }

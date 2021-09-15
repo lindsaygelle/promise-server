@@ -18,6 +18,7 @@ func DecodeTaskCreate(readCloser io.ReadCloser) (taskCreate TaskCreate, err erro
 	defer readCloser.Close()
 	err = json.NewDecoder(readCloser).Decode(&taskCreate)
 	if err != nil {
+		err = ErrTask
 		return
 	}
 	err = verifyTaskCreate(taskCreate)
@@ -44,7 +45,7 @@ func verifyTaskCreateCategory(taskCreate TaskCreate) error {
 
 func verifyTaskCreateName(taskCreate TaskCreate) error {
 	if len(taskCreate.Name) == 0 {
-		return ErrTaskCreateName
+		return ErrTaskName
 	}
 	return nil
 }
