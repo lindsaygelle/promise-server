@@ -16,6 +16,6 @@ func DecodeDomainCreate(readCloser io.ReadCloser) (domainCreate DomainCreate, er
 		err = ErrDomain
 		return
 	}
-	err = validateDomainCreate(domainCreate)
+	err = validateDomainCreate(&domainCreate)
 	return
 }

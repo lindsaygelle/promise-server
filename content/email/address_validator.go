@@ -1,3 +1,7 @@
 package email
 
-type AddressValidator func(Address) error
+type AddressValidator func(*Address) error
+
+func validateAddress(*Address) error {
+	return nil
+}

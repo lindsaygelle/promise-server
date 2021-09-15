@@ -25,14 +25,17 @@ func DecodeAddress(readCloser io.ReadCloser) (address Address, err error) {
 		err = ErrAddress
 		return
 	}
+	err = validateAddress(&address)
 	return
 }
 
-func ScanAddress(scanner interface{ Scan(...interface{}) error }) (Address, error) {
+func ScanAddress(scanner interface{ Scan(...interface{}) error }) (address Address, err error) {
 	var b []byte
-	err := scanner.Scan(&b)
+	err = scanner.Scan(&b)
 	if err == sql.ErrNoRows {
-		return Address{}, ErrAddressNotFound
+		err = ErrAddressNotFound
+		return
 	}
-	return DecodeAddress(io.NopCloser(bytes.NewReader(b)))
+	address, err = DecodeAddress(io.NopCloser(bytes.NewReader(b)))
+	return
 }

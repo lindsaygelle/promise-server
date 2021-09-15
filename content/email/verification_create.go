@@ -16,6 +16,6 @@ func DecodeVerificationCreate(readCloser io.ReadCloser) (verificationCreate Veri
 		err = ErrVerification
 		return
 	}
-	err = validateVerificationCreate(verificationCreate)
+	err = validateVerificationCreate(&verificationCreate)
 	return
 }

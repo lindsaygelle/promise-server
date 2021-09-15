@@ -18,14 +18,21 @@ type Domain struct {
 func DecodeDomain(readCloser io.ReadCloser) (domain Domain, err error) {
 	defer readCloser.Close()
 	err = json.NewDecoder(readCloser).Decode(&domain)
+	if err != nil {
+		err = ErrDomain
+		return
+	}
+	err = validateDomain(&domain)
 	return
 }
 
-func ScanDomain(scanner interface{ Scan(...interface{}) error }) (Domain, error) {
+func ScanDomain(scanner interface{ Scan(...interface{}) error }) (domain Domain, err error) {
 	var b []byte
-	err := scanner.Scan(&b)
+	err = scanner.Scan(&b)
 	if err == sql.ErrNoRows {
-		return Domain{}, ErrDomainNotFound
+		err = ErrDomainNotFound
+		return
 	}
-	return DecodeDomain(io.NopCloser(bytes.NewReader(b)))
+	domain, err = DecodeDomain(io.NopCloser(bytes.NewReader(b)))
+	return
 }

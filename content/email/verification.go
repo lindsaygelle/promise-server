@@ -20,14 +20,21 @@ type Verification struct {
 func DecodeVerification(readCloser io.ReadCloser) (verification Verification, err error) {
 	defer readCloser.Close()
 	err = json.NewDecoder(readCloser).Decode(&verification)
+	if err != nil {
+		err = ErrVerification
+		return
+	}
+	err = validateVerification(&verification)
 	return
 }
 
-func ScanVerification(scanner interface{ Scan(...interface{}) error }) (Verification, error) {
+func ScanVerification(scanner interface{ Scan(...interface{}) error }) (verification Verification, err error) {
 	var b []byte
-	err := scanner.Scan(&b)
+	err = scanner.Scan(&b)
 	if err == sql.ErrNoRows {
-		return Verification{}, ErrVerificationNotFound
+		err = ErrVerificationNotFound
+		return
 	}
-	return DecodeVerification(io.NopCloser(bytes.NewReader(b)))
+	verification, err = DecodeVerification(io.NopCloser(bytes.NewReader(b)))
+	return
 }

@@ -1,11 +1,11 @@
 package email
 
-type VerificationCreateValidator func(VerificationCreate) error
+type VerificationCreateValidator func(*VerificationCreate) error
 
 var verificationCreateValidator = [...]VerificationCreateValidator{
 	validateVerificationCreateAddressID}
 
-func validateVerificationCreate(verificationCreate VerificationCreate) error {
+func validateVerificationCreate(verificationCreate *VerificationCreate) error {
 	for _, validator := range verificationCreateValidator {
 		if err := validator(verificationCreate); err != nil {
 			return err
@@ -14,7 +14,7 @@ func validateVerificationCreate(verificationCreate VerificationCreate) error {
 	return nil
 }
 
-func validateVerificationCreateAddressID(verificationCreate VerificationCreate) error {
+func validateVerificationCreateAddressID(verificationCreate *VerificationCreate) error {
 	if verificationCreate.AddressID == 0 {
 		return ErrVerificationAddressID
 	}
