@@ -10,9 +10,9 @@ type Address struct {
 	Address      string     `json:"address"`
 	DomainID     string     `json:"domain_id"`
 	ID           uint       `json:"id"`
+	IsVerified   bool       `json:"is_verified"`
 	TimeCreated  time.Time  `json:"time_created"`
 	TimeVerified *time.Time `json:"time_verified"`
-	Verified     bool       `json:"verified"`
 }
 
 func DecodeAddress(readCloser io.ReadCloser) (address Address, err error) {

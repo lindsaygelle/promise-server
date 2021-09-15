@@ -16,6 +16,7 @@ type Category struct {
 }
 
 func DecodeCategory(reader io.ReadCloser) (category Category, err error) {
+	defer reader.Close()
 	err = json.NewDecoder(reader).Decode(&category)
 	return
 }
