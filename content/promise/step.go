@@ -29,14 +29,17 @@ func DecodeStep(readCloser io.ReadCloser) (step Step, err error) {
 		err = ErrStep
 		return
 	}
+	err = validateStep(&step)
 	return
 }
 
-func ScanStep(scanner interface{ Scan(...interface{}) error }) (Step, error) {
+func ScanStep(scanner interface{ Scan(...interface{}) error }) (step Step, err error) {
 	var b []byte
-	err := scanner.Scan(&b)
+	err = scanner.Scan(&b)
 	if err == sql.ErrNoRows {
-		return Step{}, ErrStepNotFound
+		err = ErrStepNotFound
+		return
 	}
-	return DecodeStep(io.NopCloser(bytes.NewReader(b)))
+	step, err = DecodeStep(io.NopCloser(bytes.NewReader(b)))
+	return
 }

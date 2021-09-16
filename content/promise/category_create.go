@@ -18,6 +18,6 @@ func DecodeCategoryCreate(readCloser io.ReadCloser) (categoryCreate CategoryCrea
 		err = ErrCategory
 		return
 	}
-	err = validateCategoryCreate(categoryCreate)
+	err = validateCategoryCreate(&categoryCreate)
 	return
 }

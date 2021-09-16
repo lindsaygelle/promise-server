@@ -28,14 +28,17 @@ func DecodeTask(readCloser io.ReadCloser) (task Task, err error) {
 		err = ErrTask
 		return
 	}
+	err = validateTask(&task)
 	return
 }
 
-func ScanTask(scanner interface{ Scan(...interface{}) error }) (Task, error) {
+func ScanTask(scanner interface{ Scan(...interface{}) error }) (task Task, err error) {
 	var b []byte
-	err := scanner.Scan(&b)
+	err = scanner.Scan(&b)
 	if err == sql.ErrNoRows {
-		return Task{}, ErrTaskNotFound
+		err = ErrTaskNotFound
+		return
 	}
-	return DecodeTask(io.NopCloser(bytes.NewReader(b)))
+	task, err = DecodeTask(io.NopCloser(bytes.NewReader(b)))
+	return
 }

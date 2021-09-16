@@ -19,6 +19,6 @@ func DecodeTaskCreate(readCloser io.ReadCloser) (taskCreate TaskCreate, err erro
 		err = ErrTask
 		return
 	}
-	err = validateTaskCreate(taskCreate)
+	err = validateTaskCreate(&taskCreate)
 	return
 }

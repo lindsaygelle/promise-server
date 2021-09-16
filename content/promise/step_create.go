@@ -20,6 +20,6 @@ func DecodeStepCreate(readCloser io.ReadCloser) (stepCreate StepCreate, err erro
 		err = ErrStep
 		return
 	}
-	err = validateStepCreate(stepCreate)
+	err = validateStepCreate(&stepCreate)
 	return
 }

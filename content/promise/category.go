@@ -24,14 +24,17 @@ func DecodeCategory(reader io.ReadCloser) (category Category, err error) {
 		err = ErrCategory
 		return
 	}
+	err = validateCategory(&category)
 	return
 }
 
-func ScanCategory(scanner interface{ Scan(...interface{}) error }) (Category, error) {
+func ScanCategory(scanner interface{ Scan(...interface{}) error }) (category Category, err error) {
 	var b []byte
-	err := scanner.Scan(&b)
+	err = scanner.Scan(&b)
 	if err == sql.ErrNoRows {
-		return Category{}, ErrCategoryNotFound
+		err = ErrCategoryNotFound
+		return
 	}
-	return DecodeCategory(io.NopCloser(bytes.NewReader(b)))
+	category, err = DecodeCategory(io.NopCloser(bytes.NewReader(b)))
+	return
 }
