@@ -9,7 +9,7 @@ import (
 )
 
 type Task struct {
-	TaskID        uint       `json:"category_id"`
+	CategoryID    uint       `json:"category_id"`
 	Description   *string    `json:"description"`
 	ID            uint       `json:"id"`
 	IsCompleted   bool       `json:"is_completed"`
