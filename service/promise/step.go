@@ -8,10 +8,13 @@ import (
 
 type StepService interface {
 	Get(stepID string) (promise.Step, error)
-	GetAll() (promise.Steps, error)
 	GetAllByTask(taskID string) (promise.Steps, error)
 }
 
 type stepService struct {
 	*sql.DB
+}
+
+func NewStepService(database *sql.DB) StepService {
+	return &stepService{database}
 }

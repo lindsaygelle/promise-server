@@ -15,3 +15,7 @@ type CategoryService interface {
 type categoryService struct {
 	*sql.DB
 }
+
+func NewCategoryService(database *sql.DB) CategoryService {
+	return &categoryService{database}
+}

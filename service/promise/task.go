@@ -8,10 +8,13 @@ import (
 
 type TaskService interface {
 	Get(taskID string) (promise.Task, error)
-	GetAll() (promise.Tasks, error)
 	GetAllByProfile(profileID string) (promise.Tasks, error)
 }
 
 type taskService struct {
 	*sql.DB
+}
+
+func NewTaskService(database *sql.DB) TaskService {
+	return &taskService{database}
 }
