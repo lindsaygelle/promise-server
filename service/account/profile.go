@@ -7,7 +7,7 @@ import (
 )
 
 type ProfileService interface {
-	Get(string) (account.Profile, error)
+	Get(profileID string) (account.Profile, error)
 	GetAll() (account.Profiles, error)
 }
 
