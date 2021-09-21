@@ -8,7 +8,6 @@ import (
 
 type CategoryService interface {
 	Get(categoryID string) (promise.Category, error)
-	GetAll() (promise.Categories, error)
 	GetAllByProfile(profileID string) (promise.Categories, error)
 }
 
