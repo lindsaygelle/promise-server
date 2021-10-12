@@ -2,6 +2,7 @@ package account
 
 import (
 	"database/sql"
+	"net/http"
 
 	"github.com/lindsaygelle/promise/promise-server/content/account"
 )
@@ -9,6 +10,7 @@ import (
 type ProfileService interface {
 	Get(profileID string) (account.Profile, error)
 	GetAll() (account.Profiles, error)
+	Make(r *http.Request) (account.Profile, error)
 }
 
 type profileService struct {
