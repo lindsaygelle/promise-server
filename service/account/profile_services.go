@@ -6,8 +6,14 @@ import (
 	"github.com/lindsaygelle/promise/promise-server/content/account"
 )
 
-func (p *profileService) Get(profileID string) (account.Profile, error) {
-	return account.ScanProfile(nil)
+func (p *profileService) Get(profileID string) (profile account.Profile, err error) {
+	tx, err := p.DB.Begin()
+	if err != nil {
+		return
+	}
+	row := tx.QueryRow("SELECT ROW_TO_JSON(T.*) FROM account.profile WHERE id = ?", profileID)
+	profile, err = account.ScanProfile(row)
+	return
 }
 
 func (p *profileService) GetAll() (account.Profiles, error) {
